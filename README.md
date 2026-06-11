@@ -44,42 +44,42 @@ Place the files in the `scene/` folder at this path:
 >
 > Scene backgrounds, ambient sound, and a frosted-glass writing panel — built for deep focus.
 
-![写作界面](screenshots/writing.png)
+<img src="screenshots/writing.png" width="700" alt="写作界面">
 
 ### 毛玻璃编辑面板特写 · Frosted-glass Panel Close-up
 > 可拖拽调节大小，支持自定义透明度和字体颜色。
 >
 > Freely resizable, with adjustable opacity and custom text color.
 
-![写作特写](screenshots/word-front.png)
+<img src="screenshots/word-front.png" width="700" alt="写作特写">
 
 ### 场景与音效面板 · Scene & Sound Panel
 > 一键切换场景，自动匹配环境音效（大海→海浪，大雪→壁炉声）。
 >
 > Switch scenes in one click — ambient sound auto-matches (ocean → waves, snow → fireplace).
 
-![场景面板](screenshots/scene-panel.png)
+<img src="screenshots/scene-panel.png" width="700" alt="场景面板">
 
 ### 字体与排版 · Typography Settings
 > 多款中英文字体，可调字号、行距、面板宽度和正文颜色。
 >
 > Multiple Chinese & English fonts, adjustable size, line height, panel width, and text color.
 
-![字体设置](screenshots/typography.png)
+<img src="screenshots/typography.png" width="700" alt="字体设置">
 
 ### 摸鱼 / 休息模式 · Break Mode
 > 计时休息，播放自定义视频，右侧可提前结束。
 >
 > Timed break with custom video playback. End early anytime.
 
-![摸鱼模式](screenshots/break-mode.png)
+<img src="screenshots/break-mode.png" width="700" alt="摸鱼模式">
 
 ### 中英文界面切换 · Bilingual UI
 > 右上角切换按钮，支持中文 ↔ English 随时切换。
 >
 > Toggle between Chinese and English at any time via the top-right button.
 
-![双语界面](screenshots/bilingual.png)
+<img src="screenshots/bilingual.png" width="700" alt="双语界面">
 
 > 📸 如需更新截图，将图片放入 `screenshots/` 文件夹并替换对应文件名即可。
 >
