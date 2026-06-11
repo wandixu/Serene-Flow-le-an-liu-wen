@@ -22,6 +22,8 @@ A focused desktop writing app that brings creativity back to the words themselve
 
 ![写作界面](screenshots/writing.png)
 
+![写作特写](screenshots/word-front.png)
+
 ### 场景与音效面板 · Scene & Sound Panel
 > 一键切换场景，自动匹配环境音效（大海→海浪，大雪→壁炉声）。
 >
