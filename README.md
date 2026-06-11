@@ -13,6 +13,30 @@ A focused desktop writing app that brings creativity back to the words themselve
 
 ---
 
+## 场景视频下载 · Scene Video Downloads
+
+> 三个大场景视频（大雪、大海、森林小溪）因超过 GitHub 100MB 限制，不包含在代码仓库中，需单独下载。
+>
+> Three large scene videos (Snow, Ocean, Forest Stream) exceed GitHub's 100MB limit and must be downloaded separately.
+
+**第一步 / Step 1** — 前往 [Releases 页面](../../releases) 下载视频文件
+
+Go to the [Releases page](../../releases) and download the `.mp4` files
+
+**第二步 / Step 2** — 将文件放入以下路径的 `scene/` 文件夹
+
+Place the files in the `scene/` folder at this path:
+
+```
+~/Library/Application Support/乐安流文/scene/
+```
+
+> 💡 路径不存在时，先启动一次 App 会自动创建。
+>
+> 💡 If the path doesn't exist, launch the app once — it will be created automatically.
+
+---
+
 ## 截图 · Screenshots
 
 ### 沉浸式写作环境 · Immersive Writing Environment
@@ -21,6 +45,11 @@ A focused desktop writing app that brings creativity back to the words themselve
 > Scene backgrounds, ambient sound, and a frosted-glass writing panel — built for deep focus.
 
 ![写作界面](screenshots/writing.png)
+
+### 毛玻璃编辑面板特写 · Frosted-glass Panel Close-up
+> 可拖拽调节大小，支持自定义透明度和字体颜色。
+>
+> Freely resizable, with adjustable opacity and custom text color.
 
 ![写作特写](screenshots/word-front.png)
 
