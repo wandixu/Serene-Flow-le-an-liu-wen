@@ -46,19 +46,19 @@ Place the files in the `scene/` folder at this path:
 
 <img src="screenshots/writing.png" width="700" alt="写作界面">
 
-### 毛玻璃编辑面板特写 · Frosted-glass Panel Close-up
-> 可拖拽调节大小，支持自定义透明度和字体颜色。
->
-> Freely resizable, with adjustable opacity and custom text color.
-
-<img src="screenshots/word-front.png" width="700" alt="写作特写">
-
 ### 场景与音效面板 · Scene & Sound Panel
 > 一键切换场景，自动匹配环境音效（大海→海浪，大雪→壁炉声）。
 >
 > Switch scenes in one click — ambient sound auto-matches (ocean → waves, snow → fireplace).
 
-<img src="screenshots/scene-panel.png" width="700" alt="场景面板">
+<img src="screenshots/word-front.png" width="700" alt="场景面板">
+
+### 毛玻璃编辑面板特写 · Frosted-glass Panel Close-up
+> 可拖拽调节大小，支持自定义透明度和字体颜色。
+>
+> Freely resizable, with adjustable opacity and custom text color.
+
+<img src="screenshots/scene-panel.png" width="700" alt="写作特写">
 
 ### 字体与排版 · Typography Settings
 > 多款中英文字体，可调字号、行距、面板宽度和正文颜色。
