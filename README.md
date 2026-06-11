@@ -161,9 +161,9 @@ Media files are stored in the user data directory and survive app updates:
 
 子目录 / Subdirectories: `scene/` · `sound/` · `摸鱼/`
 
-> ⚠️ 大文件场景（大雪、大海、森林小溪）未包含在仓库中，需手动复制到上述路径。
+> 📦 大文件场景（大雪、大海、森林小溪）超过 GitHub 100MB 限制，请从 [Releases](../../releases) 页面下载后放入上述路径。
 >
-> ⚠️ Large scene videos (Snow, Ocean, Forest Stream) are not in the repo — copy them manually to the path above.
+> 📦 Large scene videos (Snow, Ocean, Forest Stream) exceed GitHub's 100MB limit. Download them from the [Releases](../../releases) page and place them in the path above.
 
 ---
 
