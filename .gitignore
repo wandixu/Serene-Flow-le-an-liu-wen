@@ -1,0 +1,11 @@
+node_modules/
+dist/
+assets/icon.iconset/
+*.blockmap
+*.dmg
+.DS_Store
+
+# Large scene videos (>100MB, over GitHub limit). Add manually to userData after install.
+scene/大雪.mp4
+scene/大海.mp4
+scene/森林小溪.mp4

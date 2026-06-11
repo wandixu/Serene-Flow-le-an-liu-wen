@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>乐安流文</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Lora:ital,wght@0,400;0,500;1,400&family=Ma+Shan+Zheng&family=Noto+Sans+SC:wght@300;400;500&family=Noto+Serif+SC:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="theme-morning">
+
+<div class="bg-layer" id="bgLayer"></div>
+<video id="bgVideo" autoplay loop muted playsinline></video>
+<audio id="ambientAudio" loop></audio>
+
+<!-- ── Sidebar ── -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <span class="app-logo">✦</span>
+    <span class="app-name" data-i18n="app-name">乐安流文</span>
+    <div style="display:flex;gap:2px">
+      <button class="icon-btn" id="outlineBtn" title="大纲">📋</button>
+      <button class="icon-btn" id="newNovelBtn" title="新建小说">＋</button>
+    </div>
+  </div>
+  <div class="novel-list" id="novelList"></div>
+</aside>
+
+<!-- ── Main editor ── -->
+<main class="editor-area" id="editorArea">
+
+  <div class="editor-topbar" id="editorTopbar">
+    <button class="icon-btn sidebar-toggle" id="sidebarToggle" title="折叠侧边栏">☰</button>
+    <div class="chapter-info">
+      <span class="novel-title-label" id="currentNovelLabel" data-i18n="no-novel-label">请选择或新建小说</span>
+      <span class="chapter-sep">›</span>
+      <input class="chapter-title-input" id="chapterTitleInput"
+             placeholder="章节标题" data-i18n-ph="chapter-placeholder" disabled>
+    </div>
+    <div class="topbar-right">
+      <span class="wordcount-badge" id="wordCountBadge">0 字</span>
+      <span class="wordcount-badge" id="chapterTimeBadge" title="本章写作时长">⏱ 0:00</span>
+      <button class="icon-btn lang-btn" id="langBtn" title="Language / 语言">EN</button>
+      <button class="icon-btn" id="settingsBtn" title="设置">⚙</button>
+    </div>
+  </div>
+
+  <div class="writing-wrap" id="writingWrap">
+    <div class="glass-panel" id="glassPanel">
+      <div class="writing-area"
+           id="writingArea"
+           contenteditable="false"
+           spellcheck="false"
+           placeholder="在这里开始写作…"
+           data-i18n-ph="write-placeholder"></div>
+    </div>
+  </div>
+
+  <div class="editor-bottombar">
+    <button class="tool-btn" id="themeCycleBtn" data-i18n="btn-bg">🌙 背景</button>
+    <div class="bottombar-volume" id="bottombarVolume">
+      <span class="vol-icon" id="volIcon">🔊</span>
+      <input type="range" id="bottomVolSlider" min="0" max="100" value="40" step="5">
+    </div>
+    <button class="tool-btn" id="fontBtn" data-i18n="btn-font">Aa 字体</button>
+    <button class="tool-btn" id="formatBtn" title="小说模式：首行缩进＋两端对齐；随笔模式：左对齐无缩进">随笔模式</button>
+    <div class="spacer"></div>
+    <button class="tool-btn" id="exportBtn" data-i18n="btn-export">⬆ 导出</button>
+    <button class="moyu-btn" id="moyuBtn" data-i18n="btn-moyu">🐾 摸鱼</button>
+  </div>
+
+</main>
+
+<!-- ── Welcome ── -->
+<div class="empty-hint hidden" id="emptyHint">
+  <div class="empty-icon">✦</div>
+  <div class="empty-text" data-i18n="empty-text">新建一部小说，开始创作</div>
+  <button class="btn-start" id="startBtn" data-i18n="btn-start">＋ 新建小说</button>
+</div>
+
+<!-- ── New Novel Modal ── -->
+<div class="panel-overlay hidden" id="newNovelOverlay">
+  <div class="panel" style="width:400px" id="newNovelPanel">
+    <div class="panel-header">
+      <span data-i18n="panel-new-novel">新建小说</span>
+      <button class="icon-btn" id="closeNewNovelBtn">✕</button>
+    </div>
+    <div class="panel-body">
+      <label class="setting-label" data-i18n="label-title">书名</label>
+      <input class="text-input" id="newNovelTitle"
+             placeholder="我的小说" data-i18n-ph="title-placeholder">
+
+      <label class="setting-label" style="margin-top:16px" data-i18n="label-ch1-title">第一章标题</label>
+      <input class="text-input" id="newChapterTitle"
+             placeholder="第一章 序章" data-i18n-ph="ch1-placeholder">
+
+      <label class="setting-label" style="margin-top:18px" data-i18n="label-writing-font">写作字体</label>
+      <div class="font-grid" id="newNovelFontPicker"></div>
+
+      <label class="setting-label" style="margin-top:18px" data-i18n="label-writing-mode">写作模式</label>
+      <div class="mode-toggle" id="newNovelModePicker">
+        <button class="mode-opt active" data-mode="prose">
+          <span data-i18n="mode-prose">随笔模式</span>
+          <span class="mode-desc" data-i18n="mode-prose-desc">左对齐 · 无缩进</span>
+        </button>
+        <button class="mode-opt" data-mode="novel">
+          <span data-i18n="mode-novel">小说模式</span>
+          <span class="mode-desc" data-i18n="mode-novel-desc">首行缩进 · 两端对齐</span>
+        </button>
+      </div>
+
+      <button class="btn-confirm" id="confirmNewNovelBtn" data-i18n="btn-start-writing">开始创作 ✦</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Settings Panel ── -->
+<div class="panel-overlay hidden" id="settingsOverlay">
+  <div class="panel" id="settingsPanel">
+    <div class="panel-header">
+      <span data-i18n="panel-settings">字体与排版</span>
+      <button class="icon-btn" id="closeSettingsBtn">✕</button>
+    </div>
+    <div class="panel-body">
+      <label class="setting-label" data-i18n="label-font">字体</label>
+      <div class="font-grid" id="fontOptions"></div>
+
+      <label class="setting-label" style="margin-top:20px" data-i18n="label-size">字号</label>
+      <div class="size-row">
+        <input type="range" id="fontSizeSlider" min="14" max="26" value="18" step="1">
+        <span id="fontSizeVal">18px</span>
+      </div>
+
+      <label class="setting-label" style="margin-top:20px" data-i18n="label-lineh">行距</label>
+      <div class="size-row">
+        <input type="range" id="lineHeightSlider" min="160" max="240" value="200" step="10">
+        <span id="lineHeightVal">2.0</span>
+      </div>
+
+      <label class="setting-label" style="margin-top:20px">
+        <span data-i18n="label-panel-w">文档宽度</span>
+        <span style="font-size:10px;font-weight:400;opacity:.5" data-i18n="hint-panel-w">（拖拽面板左右边缘调整）</span>
+      </label>
+      <div class="size-row">
+        <span id="panelWidthVal" style="flex:1;font-size:12px;color:var(--text-muted)">680px</span>
+        <button class="tool-btn" id="panelWidthResetBtn"
+                style="flex-shrink:0;padding:4px 14px;font-size:12px"
+                data-i18n="btn-reset-w">恢复默认</button>
+      </div>
+
+      <label class="setting-label" style="margin-top:20px" data-i18n="label-text-color">正文字色</label>
+      <div class="text-color-row" id="textColorRow"></div>
+
+      <label class="setting-label" style="margin-top:20px" data-i18n="label-moyu-img">摸鱼形象</label>
+      <div style="display:flex;gap:8px">
+        <button class="tool-btn" id="pickMoyuImageBtn"
+                style="flex:1" data-i18n="btn-pick-moyu">📁 上传图片 / GIF</button>
+        <button class="tool-btn" id="clearMoyuImageBtn" data-i18n="btn-clear-moyu">清除</button>
+      </div>
+
+      <label class="setting-label" style="margin-top:20px" data-i18n="label-moyu-time">摸鱼时长（分钟）</label>
+      <div class="moyu-time-options">
+        <button class="time-opt" data-min="5">5</button>
+        <button class="time-opt active" data-min="10">10</button>
+        <button class="time-opt" data-min="15">15</button>
+        <button class="time-opt" data-min="30">30</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ── Theme / Sound / Visual Panel ── -->
+<div class="panel-overlay hidden" id="themeOverlay">
+  <div class="panel" style="width:440px;max-height:84vh">
+    <div class="panel-header">
+      <span data-i18n="panel-theme">背景 · 声音 · 视觉</span>
+      <button class="icon-btn" id="closeThemeBtn">✕</button>
+    </div>
+    <div class="panel-body">
+
+      <label class="setting-label" data-i18n="label-scene">场景背景</label>
+      <div class="scene-grid" id="sceneGrid"><div style="font-size:12px;color:var(--text-muted)">加载中…</div></div>
+
+      <label class="setting-label" style="margin-top:20px">
+        <span data-i18n="label-theme">色调主题</span>
+        <span style="font-size:10px;font-weight:400;opacity:.5" data-i18n="hint-theme">影响侧边栏 / 面板配色</span>
+      </label>
+      <div class="theme-grid" id="themeGrid"></div>
+
+      <label class="setting-label" style="margin-top:20px">
+        <span data-i18n="label-glass">毛玻璃透明度</span>
+        <span style="font-weight:400;font-size:10px;opacity:.6" data-i18n="hint-glass">（右滑更透明）</span>
+      </label>
+      <div class="size-row">
+        <input type="range" id="glassAlphaSlider" min="0" max="85" value="30" step="5">
+        <span id="glassAlphaVal">30%</span>
+      </div>
+
+      <label class="setting-label" style="margin-top:20px" data-i18n="label-sound">环境音效</label>
+      <div class="sound-list" id="soundList">
+        <div style="font-size:12px;color:var(--text-muted)">加载中…</div>
+      </div>
+      <div class="size-row" style="margin-top:10px">
+        <span style="font-size:11px;color:var(--text-muted);white-space:nowrap;flex-shrink:0"
+              data-i18n="label-vol">音量</span>
+        <input type="range" id="audioVolumeSlider" min="0" max="100" value="40" step="5">
+        <span id="audioVolumeVal">40%</span>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ── Export Panel ── -->
+<div class="panel-overlay hidden" id="exportOverlay">
+  <div class="panel">
+    <div class="panel-header">
+      <span data-i18n="panel-export">导出</span>
+      <button class="icon-btn" id="closeExportBtn">✕</button>
+    </div>
+    <div class="panel-body">
+      <p class="export-desc" data-i18n="export-desc">选择导出格式</p>
+      <div class="export-options">
+        <button class="export-opt" data-fmt="txt" data-i18n="export-txt">📄 纯文本 .txt</button>
+        <button class="export-opt" data-fmt="md" data-i18n="export-md">📝 Markdown .md</button>
+        <button class="export-opt" data-fmt="html" data-i18n="export-html">🌐 HTML 排版 .html</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Outline Panel ── -->
+<div class="panel-overlay hidden" id="outlineOverlay">
+  <div class="panel" style="width:480px;max-height:70vh">
+    <div class="panel-header">
+      <span id="outlinePanelTitle" data-i18n="panel-outline">大纲</span>
+      <button class="icon-btn" id="closeOutlineBtn">✕</button>
+    </div>
+    <div class="panel-body" style="display:flex;flex-direction:column;gap:12px">
+      <p style="font-size:12px;color:var(--text-muted)"
+         data-i18n="outline-hint">记录故事结构、人物设定、情节要点，随时查阅。</p>
+      <textarea id="outlineArea"
+        class="text-input"
+        style="min-height:320px;resize:vertical;font-family:var(--font-family);font-size:14px;line-height:1.8"
+        placeholder="在这里写大纲、人物设定、世界观…"
+        data-i18n-ph="outline-placeholder"></textarea>
+      <button class="btn-confirm" id="saveOutlineBtn" data-i18n="btn-save-outline">保存大纲</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Stats Panel ── -->
+<div class="panel-overlay hidden" id="statsOverlay">
+  <div class="panel" style="width:360px">
+    <div class="panel-header">
+      <span id="statsPanelTitle">写作统计</span>
+      <button class="icon-btn" id="closeStatsBtn">✕</button>
+    </div>
+    <div class="panel-body" id="statsBody"></div>
+  </div>
+</div>
+
+<!-- ── Moyu Overlay ── -->
+<div class="moyu-overlay hidden" id="moyuOverlay">
+  <video id="moyuVideo" autoplay loop muted playsinline></video>
+  <div class="moyu-content">
+    <div class="moyu-left">
+      <div class="moyu-timer" id="moyuTimer">10:00</div>
+      <div class="moyu-label" data-i18n="moyu-label">好好休息 🍵</div>
+    </div>
+    <div class="moyu-right">
+      <button class="moyu-cancel-btn" id="moyuCancelBtn" data-i18n="moyu-cancel">提前结束</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast hidden" id="toast"></div>
+
+<script src="app.js"></script>
+</body>
+</html>

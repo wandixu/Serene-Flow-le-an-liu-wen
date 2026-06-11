@@ -1,0 +1,44 @@
+{
+  "name": "le-an-liu-wen",
+  "productName": "乐安流文",
+  "version": "1.0.0",
+  "description": "乐安流文 — 一款专注写作的桌面应用",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --mac",
+    "build:en": "node scripts/build-en.js"
+  },
+  "build": {
+    "appId": "com.leanliuwen.app",
+    "productName": "乐安流文",
+    "mac": {
+      "icon": "assets/icon.icns",
+      "category": "public.app-category.productivity",
+      "target": [{ "target": "dmg", "arch": ["arm64", "x64"] }]
+    },
+    "dmg": {
+      "title": "乐安流文",
+      "background": null,
+      "window": { "width": 540, "height": 380 }
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "renderer/**",
+      "assets/**",
+      "scene/**",
+      "sound/**",
+      "摸鱼/**"
+    ],
+    "extraResources": [],
+    "asar": true
+  },
+  "dependencies": {
+    "electron-store": "^8.1.0"
+  },
+  "devDependencies": {
+    "electron": "^28.0.0",
+    "electron-builder": "^26.15.2"
+  }
+}
