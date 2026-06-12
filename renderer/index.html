@@ -33,7 +33,7 @@
 
   <div class="editor-topbar" id="editorTopbar">
     <button class="icon-btn sidebar-toggle" id="sidebarToggle" title="折叠侧边栏">☰</button>
-    <div class="chapter-info">
+    <div class="chapter-info" id="chapterInfoSection">
       <span class="novel-title-label" id="currentNovelLabel" data-i18n="no-novel-label">请选择或新建小说</span>
       <span class="chapter-sep">›</span>
       <input class="chapter-title-input" id="chapterTitleInput"
@@ -55,6 +55,20 @@
            spellcheck="false"
            placeholder="在这里开始写作…"
            data-i18n-ph="write-placeholder"></div>
+    </div>
+  </div>
+
+  <!-- ── Chapter Notes Widget ── -->
+  <div class="ch-notes-widget collapsed hidden" id="chNotesWidget">
+    <div class="ch-notes-header" id="chNotesToggle">
+      <span class="ch-notes-icon">📌</span>
+      <span class="ch-notes-label" data-i18n="chapnotes-label">章纲</span>
+      <span class="ch-notes-chevron">▲</span>
+    </div>
+    <div class="ch-notes-body">
+      <textarea id="chNotesArea"
+        placeholder="本章提纲、场景备注…"
+        data-i18n-ph="chapnotes-placeholder"></textarea>
     </div>
   </div>
 

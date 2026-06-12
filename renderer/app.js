@@ -102,6 +102,7 @@ const STRINGS = {
     'toast-sound-fail':'添加失败，请检查文件权限',
     'toast-no-novel':'请先打开一部小说',
     'toast-auto-sound':(name)=>`自动播放：${name}`,
+    'chapnotes-label':'章纲','chapnotes-placeholder':'本章提纲、场景备注…',
     'toast-export-ok':'导出成功 ✓','toast-min-ch':'至少保留一个章节',
     'confirm-del-ch':'删除该章节？内容无法恢复。',
     'confirm-del-novel':'删除整部小说及所有章节？无法恢复。',
@@ -152,6 +153,7 @@ const STRINGS = {
     'toast-sound-fail':'Failed to add — check file permissions',
     'toast-no-novel':'Please open a novel first',
     'toast-auto-sound':(name)=>`Auto-playing: ${name}`,
+    'chapnotes-label':'Ch. Notes','chapnotes-placeholder':'Chapter outline, scene notes…',
     'toast-export-ok':'Exported ✓','toast-min-ch':'At least one chapter required',
     'confirm-del-ch':'Delete this chapter? This cannot be undone.',
     'confirm-del-novel':'Delete this entire novel? This cannot be undone.',
@@ -340,6 +342,7 @@ function openNovel(novelId, chapterId) {
 
 function openChapter(novelId, chapterId) {
   saveCurrentChapter();
+  saveChapterNotes();
   saveChapterTime();
   stopTimer();
 
@@ -362,6 +365,8 @@ function openChapter(novelId, chapterId) {
   chapterSeconds = ch.timeSeconds || 0;
   updateWordCount();
   updateChapterTimeDisplay();
+  loadChapterNotes(chapterId);
+  document.getElementById('chNotesWidget').classList.remove('hidden');
   renderNovels();
   store.set('lastNovelId',   novelId);
   store.set('lastChapterId', chapterId);
@@ -520,6 +525,18 @@ async function saveOutline() {
   const content = document.getElementById('outlineArea').value;
   await store.set(key, content);
   showToast(t('toast-outline-saved'));
+}
+
+// ── Chapter notes ─────────────────────────────────────────────────────────────
+async function loadChapterNotes(chapterId) {
+  const content = (await store.get('chapnotes_' + chapterId)) || '';
+  document.getElementById('chNotesArea').value = content;
+}
+
+async function saveChapterNotes() {
+  if (!activeChapterId) return;
+  const content = document.getElementById('chNotesArea').value;
+  await store.set('chapnotes_' + activeChapterId, content);
 }
 
 // ── Moyu ─────────────────────────────────────────────────────────────────────
@@ -1894,6 +1911,17 @@ function bindEvents() {
   document.querySelectorAll('.export-opt').forEach(btn =>
     btn.addEventListener('click', () => exportAs(btn.dataset.fmt)));
 
+  // Chapter notes widget
+  document.getElementById('chNotesToggle').addEventListener('click', () => {
+    document.getElementById('chNotesWidget').classList.toggle('collapsed');
+  });
+  const chNotesArea = document.getElementById('chNotesArea');
+  chNotesArea.addEventListener('input', () => {
+    clearTimeout(chNotesArea._saveTimer);
+    chNotesArea._saveTimer = setTimeout(saveChapterNotes, 1000);
+  });
+  chNotesArea.addEventListener('keydown', e => e.stopPropagation());
+
   // Outline
   document.getElementById('outlineBtn').addEventListener('click', openOutline);
   document.getElementById('closeOutlineBtn').addEventListener('click', closeAllPanels);
@@ -1916,7 +1944,7 @@ function bindEvents() {
   // Keyboard shortcuts
   document.addEventListener('keydown', e => {
     if ((e.metaKey || e.ctrlKey) && e.key === 's') {
-      e.preventDefault(); saveNovels(); saveStats(); showToast(t('toast-saved'));
+      e.preventDefault(); saveNovels(); saveStats(); saveChapterNotes(); showToast(t('toast-saved'));
     }
     if ((e.metaKey || e.ctrlKey) && e.key === 'e') {
       e.preventDefault(); document.getElementById('exportBtn').click();
@@ -1933,14 +1961,19 @@ function startAutoSave() {
 // ── Helpers ───────────────────────────────────────────────────────────────────
 function showWelcome() {
   document.getElementById('emptyHint').classList.remove('hidden');
-  document.getElementById('editorTopbar').style.visibility = 'hidden';
-  document.getElementById('writingWrap').style.visibility  = 'hidden';
+  document.getElementById('chapterInfoSection').style.visibility = 'hidden';
+  document.getElementById('wordCountBadge').style.visibility     = 'hidden';
+  document.getElementById('chapterTimeBadge').style.visibility   = 'hidden';
+  document.getElementById('writingWrap').style.visibility        = 'hidden';
+  document.getElementById('chNotesWidget').classList.add('hidden');
 }
 
 function hideWelcome() {
   document.getElementById('emptyHint').classList.add('hidden');
-  document.getElementById('editorTopbar').style.visibility = '';
-  document.getElementById('writingWrap').style.visibility  = '';
+  document.getElementById('chapterInfoSection').style.visibility = '';
+  document.getElementById('wordCountBadge').style.visibility     = '';
+  document.getElementById('chapterTimeBadge').style.visibility   = '';
+  document.getElementById('writingWrap').style.visibility        = '';
 }
 
 function deleteChapter(novelId, chapterId) {

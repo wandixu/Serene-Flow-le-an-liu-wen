@@ -300,6 +300,7 @@ body { display: flex; position: relative; z-index: 1; }
   flex-direction: column;
   min-width: 0;
   background: transparent;
+  position: relative;
 }
 
 .editor-topbar {
@@ -983,5 +984,60 @@ body.format-novel .writing-area > p { text-indent: 2em; }
 @keyframes toastIn {
   from { opacity: 0; transform: translateX(-50%) translateY(8px); }
 }
+
+/* ── Chapter notes widget ── */
+.ch-notes-widget {
+  position: absolute;
+  bottom: calc(var(--bottombar-h) + 10px);
+  left: 12px;
+  width: 220px;
+  z-index: 50;
+  border-radius: 10px;
+  background: rgba(12, 10, 22, 0.82);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+  overflow: hidden;
+}
+.theme-morning .ch-notes-widget,
+.theme-mint .ch-notes-widget,
+.theme-sakura .ch-notes-widget {
+  background: rgba(255,252,248, 0.92);
+  border-color: rgba(0,0,0,0.12);
+}
+.ch-notes-header {
+  display: flex; align-items: center; gap: 6px;
+  padding: 7px 10px; cursor: pointer;
+  user-select: none; -webkit-user-select: none;
+  border-bottom: 1px solid var(--glass-border);
+  transition: background 0.15s;
+}
+.ch-notes-widget.collapsed .ch-notes-header { border-bottom: none; }
+.ch-notes-header:hover { background: var(--glass); }
+.ch-notes-icon  { font-size: 13px; }
+.ch-notes-label { font-size: 12px; font-weight: 500; color: var(--text-muted); flex: 1; letter-spacing: 0.5px; }
+.ch-notes-chevron {
+  font-size: 9px; color: var(--text-muted);
+  transition: transform 0.2s;
+}
+.ch-notes-widget.collapsed .ch-notes-chevron { transform: rotate(180deg); }
+.ch-notes-widget.collapsed .ch-notes-body { display: none; }
+.ch-notes-body { padding: 8px; }
+#chNotesArea {
+  width: 100%; height: 120px;
+  min-height: 60px; max-height: 220px;
+  resize: vertical;
+  background: transparent; border: none; outline: none;
+  color: var(--text-main);
+  font-size: 12px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Noto Sans SC', sans-serif;
+  line-height: 1.75;
+  user-select: text; -webkit-user-select: text;
+  display: block;
+}
+#chNotesArea::placeholder { color: var(--text-muted); }
+#chNotesArea::-webkit-scrollbar { width: 3px; }
+#chNotesArea::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 2px; }
 
 .hidden { display: none !important; }
