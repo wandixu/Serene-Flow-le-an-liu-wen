@@ -21,11 +21,27 @@
     <span class="app-logo">✦</span>
     <span class="app-name" data-i18n="app-name">乐安流文</span>
     <div style="display:flex;gap:2px">
+      <button class="icon-btn" id="charsBtn" title="角色卡">👤</button>
+      <button class="icon-btn" id="worldsBtn" title="世界卡">🌍</button>
       <button class="icon-btn" id="outlineBtn" title="大纲">📋</button>
       <button class="icon-btn" id="newNovelBtn" title="新建小说">＋</button>
     </div>
   </div>
   <div class="novel-list" id="novelList"></div>
+
+  <!-- ── Chapter Notes (sidebar bottom) ── -->
+  <div class="ch-notes-widget collapsed hidden" id="chNotesWidget">
+    <div class="ch-notes-header" id="chNotesToggle">
+      <span class="ch-notes-icon">📌</span>
+      <span class="ch-notes-label" data-i18n="chapnotes-label">章纲</span>
+      <span class="ch-notes-chevron">▲</span>
+    </div>
+    <div class="ch-notes-body">
+      <textarea id="chNotesArea"
+        placeholder="本章提纲、场景备注…"
+        data-i18n-ph="chapnotes-placeholder"></textarea>
+    </div>
+  </div>
 </aside>
 
 <!-- ── Main editor ── -->
@@ -55,20 +71,6 @@
            spellcheck="false"
            placeholder="在这里开始写作…"
            data-i18n-ph="write-placeholder"></div>
-    </div>
-  </div>
-
-  <!-- ── Chapter Notes Widget ── -->
-  <div class="ch-notes-widget collapsed hidden" id="chNotesWidget">
-    <div class="ch-notes-header" id="chNotesToggle">
-      <span class="ch-notes-icon">📌</span>
-      <span class="ch-notes-label" data-i18n="chapnotes-label">章纲</span>
-      <span class="ch-notes-chevron">▲</span>
-    </div>
-    <div class="ch-notes-body">
-      <textarea id="chNotesArea"
-        placeholder="本章提纲、场景备注…"
-        data-i18n-ph="chapnotes-placeholder"></textarea>
     </div>
   </div>
 
@@ -242,6 +244,36 @@
         <button class="export-opt" data-fmt="md" data-i18n="export-md">📝 Markdown .md</button>
         <button class="export-opt" data-fmt="html" data-i18n="export-html">🌐 HTML 排版 .html</button>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Character Cards Panel ── -->
+<div class="panel-overlay hidden" id="charsOverlay">
+  <div class="panel" style="width:480px;max-height:78vh">
+    <div class="panel-header">
+      <span id="charsPanelTitle" data-i18n="panel-chars">角色卡</span>
+      <button class="icon-btn" id="closeCharsBtn">✕</button>
+    </div>
+    <div class="panel-body" style="display:flex;flex-direction:column;gap:10px">
+      <p style="font-size:12px;color:var(--text-muted)" data-i18n="chars-hint">记录角色设定、性格、背景，随时查阅。</p>
+      <button class="tool-btn" id="addCharBtn" style="align-self:flex-start" data-i18n="btn-add-char">＋ 添加角色</button>
+      <div id="charsList"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── World Cards Panel ── -->
+<div class="panel-overlay hidden" id="worldsOverlay">
+  <div class="panel" style="width:480px;max-height:78vh">
+    <div class="panel-header">
+      <span id="worldsPanelTitle" data-i18n="panel-worlds">世界卡</span>
+      <button class="icon-btn" id="closeWorldsBtn">✕</button>
+    </div>
+    <div class="panel-body" style="display:flex;flex-direction:column;gap:10px">
+      <p style="font-size:12px;color:var(--text-muted)" data-i18n="worlds-hint">记录世界设定、场景、历史背景，构建你的世界观。</p>
+      <button class="tool-btn" id="addWorldBtn" style="align-self:flex-start" data-i18n="btn-add-world">＋ 添加世界</button>
+      <div id="worldsList"></div>
     </div>
   </div>
 </div>

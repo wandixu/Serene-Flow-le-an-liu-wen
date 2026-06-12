@@ -7,6 +7,10 @@ const store = {
   async set(key, val) {
     if (window.electronAPI) return await window.electronAPI.storeSet(key, val);
     localStorage.setItem(key, JSON.stringify(val));
+  },
+  async delete(key) {
+    if (window.electronAPI) return await window.electronAPI.storeDelete(key);
+    localStorage.removeItem(key);
   }
 };
 
@@ -103,6 +107,11 @@ const STRINGS = {
     'toast-no-novel':'请先打开一部小说',
     'toast-auto-sound':(name)=>`自动播放：${name}`,
     'chapnotes-label':'章纲','chapnotes-placeholder':'本章提纲、场景备注…',
+    'panel-chars':'角色卡','chars-hint':'记录角色设定、性格、背景，随时查阅。',
+    'btn-add-char':'＋ 添加角色','card-char-name-ph':'角色名称','card-char-desc-ph':'性格、背景、外貌、能力…',
+    'panel-worlds':'世界卡','worlds-hint':'记录世界设定、场景、历史背景，构建你的世界观。',
+    'btn-add-world':'＋ 添加世界','card-world-name-ph':'世界 / 地点名称','card-world-desc-ph':'地理、历史、规则、氛围…',
+    'chars-suffix':' · 角色卡','worlds-suffix':' · 世界卡',
     'toast-export-ok':'导出成功 ✓','toast-min-ch':'至少保留一个章节',
     'confirm-del-ch':'删除该章节？内容无法恢复。',
     'confirm-del-novel':'删除整部小说及所有章节？无法恢复。',
@@ -154,6 +163,11 @@ const STRINGS = {
     'toast-no-novel':'Please open a novel first',
     'toast-auto-sound':(name)=>`Auto-playing: ${name}`,
     'chapnotes-label':'Ch. Notes','chapnotes-placeholder':'Chapter outline, scene notes…',
+    'panel-chars':'Characters','chars-hint':'Record character settings, personalities, and backstories.',
+    'btn-add-char':'＋ Add Character','card-char-name-ph':'Character name','card-char-desc-ph':'Personality, backstory, appearance, abilities…',
+    'panel-worlds':'Worlds','worlds-hint':'Record world settings, locations, and lore.',
+    'btn-add-world':'＋ Add World','card-world-name-ph':'World / Location name','card-world-desc-ph':'Geography, history, rules, atmosphere…',
+    'chars-suffix':' · Characters','worlds-suffix':' · Worlds',
     'toast-export-ok':'Exported ✓','toast-min-ch':'At least one chapter required',
     'confirm-del-ch':'Delete this chapter? This cannot be undone.',
     'confirm-del-novel':'Delete this entire novel? This cannot be undone.',
@@ -537,6 +551,142 @@ async function saveChapterNotes() {
   if (!activeChapterId) return;
   const content = document.getElementById('chNotesArea').value;
   await store.set('chapnotes_' + activeChapterId, content);
+}
+
+// ── Character & World Cards ───────────────────────────────────────────────────
+let _cardsPanel = { type: 'chars', data: [] };
+
+async function openCharsPanel() {
+  if (!activeNovelId) { showToast(t('toast-no-novel')); return; }
+  const novel = novels.find(n => n.id === activeNovelId);
+  document.getElementById('charsPanelTitle').textContent =
+    (novel ? novel.title + t('chars-suffix') : t('panel-chars'));
+  _cardsPanel = { type: 'chars', data: (await store.get('chars_' + activeNovelId)) || [] };
+  renderCards();
+  document.getElementById('charsOverlay').classList.remove('hidden');
+}
+
+async function openWorldsPanel() {
+  if (!activeNovelId) { showToast(t('toast-no-novel')); return; }
+  const novel = novels.find(n => n.id === activeNovelId);
+  document.getElementById('worldsPanelTitle').textContent =
+    (novel ? novel.title + t('worlds-suffix') : t('panel-worlds'));
+  _cardsPanel = { type: 'worlds', data: (await store.get('worlds_' + activeNovelId)) || [] };
+  renderCards();
+  document.getElementById('worldsOverlay').classList.remove('hidden');
+}
+
+function renderCards() {
+  const listId = _cardsPanel.type === 'chars' ? 'charsList' : 'worldsList';
+  const listEl = document.getElementById(listId);
+  if (!listEl) return;
+  const namePh = t('card-' + (_cardsPanel.type === 'chars' ? 'char' : 'world') + '-name-ph');
+  const descPh = t('card-' + (_cardsPanel.type === 'chars' ? 'char' : 'world') + '-desc-ph');
+
+  listEl.innerHTML = '';
+  if (_cardsPanel.data.length === 0) {
+    const empty = document.createElement('div');
+    empty.className = 'cards-empty';
+    empty.textContent = _cardsPanel.type === 'chars'
+      ? (settings.lang === 'zh' ? '还没有角色，点击上方按钮添加' : 'No characters yet — click above to add one')
+      : (settings.lang === 'zh' ? '还没有世界，点击上方按钮添加' : 'No worlds yet — click above to add one');
+    listEl.appendChild(empty);
+    return;
+  }
+
+  _cardsPanel.data.forEach((card, idx) => {
+    const item = document.createElement('div');
+    item.className = 'card-item';
+
+    const header = document.createElement('div');
+    header.className = 'card-item-header';
+
+    const nameInput = document.createElement('input');
+    nameInput.className = 'card-name-input';
+    nameInput.value = card.name;
+    nameInput.placeholder = namePh;
+
+    const chevron = document.createElement('span');
+    chevron.className = 'card-chevron';
+    chevron.textContent = '▾';
+
+    const delBtn = document.createElement('button');
+    delBtn.className = 'card-del-btn';
+    delBtn.textContent = '×';
+    delBtn.title = settings.lang === 'zh' ? '删除' : 'Delete';
+
+    header.append(nameInput, chevron, delBtn);
+
+    const body = document.createElement('div');
+    body.className = 'card-item-body';
+    body.style.display = 'none';
+
+    const descArea = document.createElement('textarea');
+    descArea.className = 'card-desc-area';
+    descArea.value = card.desc;
+    descArea.placeholder = descPh;
+    body.appendChild(descArea);
+
+    item.append(header, body);
+    listEl.appendChild(item);
+
+    // Toggle expand
+    header.addEventListener('click', e => {
+      if (e.target === nameInput || e.target === delBtn) return;
+      const open = body.style.display !== 'none';
+      body.style.display = open ? 'none' : 'block';
+      item.classList.toggle('open', !open);
+      if (!open) descArea.focus();
+    });
+
+    // Save name
+    nameInput.addEventListener('input', () => {
+      _cardsPanel.data[idx].name = nameInput.value;
+      _saveCards();
+    });
+    nameInput.addEventListener('keydown', e => e.stopPropagation());
+
+    // Save desc
+    descArea.addEventListener('input', () => {
+      _cardsPanel.data[idx].desc = descArea.value;
+      _saveCards();
+    });
+    descArea.addEventListener('keydown', e => e.stopPropagation());
+
+    // Delete
+    delBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      _cardsPanel.data.splice(idx, 1);
+      store.set(_cardsPanel.type + '_' + activeNovelId, _cardsPanel.data);
+      renderCards();
+    });
+  });
+}
+
+let _cardsSaveTimer = null;
+function _saveCards() {
+  clearTimeout(_cardsSaveTimer);
+  _cardsSaveTimer = setTimeout(() => {
+    if (activeNovelId)
+      store.set(_cardsPanel.type + '_' + activeNovelId, _cardsPanel.data);
+  }, 600);
+}
+
+async function addCard() {
+  if (!activeNovelId) { showToast(t('toast-no-novel')); return; }
+  _cardsPanel.data.push({ id: uid(), name: '', desc: '' });
+  await store.set(_cardsPanel.type + '_' + activeNovelId, _cardsPanel.data);
+  renderCards();
+  // Auto-expand the new (last) card
+  const listId = _cardsPanel.type === 'chars' ? 'charsList' : 'worldsList';
+  const items = document.getElementById(listId).querySelectorAll('.card-item');
+  const last = items[items.length - 1];
+  if (last) {
+    const body = last.querySelector('.card-item-body');
+    body.style.display = 'block';
+    last.classList.add('open');
+    last.querySelector('.card-name-input').focus();
+  }
 }
 
 // ── Moyu ─────────────────────────────────────────────────────────────────────
@@ -1922,6 +2072,16 @@ function bindEvents() {
   });
   chNotesArea.addEventListener('keydown', e => e.stopPropagation());
 
+  // Character cards
+  document.getElementById('charsBtn').addEventListener('click', openCharsPanel);
+  document.getElementById('closeCharsBtn').addEventListener('click', closeAllPanels);
+  document.getElementById('addCharBtn').addEventListener('click', addCard);
+
+  // World cards
+  document.getElementById('worldsBtn').addEventListener('click', openWorldsPanel);
+  document.getElementById('closeWorldsBtn').addEventListener('click', closeAllPanels);
+  document.getElementById('addWorldBtn').addEventListener('click', addCard);
+
   // Outline
   document.getElementById('outlineBtn').addEventListener('click', openOutline);
   document.getElementById('closeOutlineBtn').addEventListener('click', closeAllPanels);
@@ -1935,7 +2095,8 @@ function bindEvents() {
   document.getElementById('moyuCancelBtn').addEventListener('click', endMoyu);
 
   // Close overlays on backdrop click
-  ['settingsOverlay','themeOverlay','exportOverlay','newNovelOverlay','outlineOverlay','statsOverlay'].forEach(id => {
+  ['settingsOverlay','themeOverlay','exportOverlay','newNovelOverlay',
+   'outlineOverlay','statsOverlay','charsOverlay','worldsOverlay'].forEach(id => {
     document.getElementById(id)?.addEventListener('click', e => {
       if (e.target.id === id) closeAllPanels();
     });
@@ -2008,7 +2169,7 @@ function deleteNovel(novelId) {
 
 function closeAllPanels() {
   ['settingsOverlay','themeOverlay','exportOverlay','newNovelOverlay',
-   'outlineOverlay','statsOverlay'].forEach(id =>
+   'outlineOverlay','statsOverlay','charsOverlay','worldsOverlay'].forEach(id =>
     document.getElementById(id)?.classList.add('hidden'));
 }
 
